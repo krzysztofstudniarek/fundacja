@@ -2,7 +2,7 @@
 var width = 1070, height = 627;
 var win = false, loose = false, inGame = false;
 
-var background, font;
+var background, font, bang, bang_cooldown = 500;
 
 var hit_sprites = [];
 var hits = [];
@@ -42,7 +42,7 @@ function draw()
 {
     stretch_blit(background,canvas,0,0,background.w,background.h,0,0,width,height);
 
-    if(inGame){   
+    if(inGame && !win && !loose){   
         if(hero.vx == 0){
             scaled_sprite(canvas,hero.sprite_current,hero.x,hero.y, 0.1, 0.1);
         }else if(hero.vx < 0){
@@ -70,16 +70,29 @@ function draw()
                 rotate_scaled_sprite(canvas, neuron.sprite ,neuron.x, neuron.y, neuron.rotation, 0.1, 0.1);
             }
         });
-    }else{
+    }else if(!inGame && !win && !loose){
         textout_centre (canvas, font, "Wcisnij SPACJE, zeby rozpoczac gre", width/2, height/2, 40, makecol(0,0,0));
+    }else{
+         if(win){
+            textout_centre (canvas, font, "Brawo, dales kopniaczka potworowi padaczce!", width/2, height/2, 40, makecol(0,0,0));
+        }else{
+            textout_centre (canvas, font, "Niestety nie udalo sie.", width/2, height/2, 40, makecol(0,0,0));
+            textout_centre (canvas, font, "Odswiez strone i sprobuj jeszcze raz!", width/2, height/2+50, 40, makecol(0,0,0));
+        }
+
+        bang_cooldown -= 5;
+        if(bang_cooldown >=0){
+            scaled_sprite(canvas,bang,width/2,height/2, bang_cooldown/500, bang_cooldown/500);
+        }
     }
+
     
 }
 
 // update game logic
 function update()
 {
-    if(inGame){
+    if(inGame && !win && !loose){
         hero.x += hero.vx;
         hero.y += hero.vy;
 
@@ -110,7 +123,6 @@ function update()
         brain.x += brain.vx;
         brain.y += brain.vy;
     }
-
 }
 
 function controls()
@@ -164,7 +176,7 @@ function controls()
         if(released[KEY_RIGHT] || released[KEY_LEFT]){
             hero.vx = 0;
         }
-    }else{
+    }else if(!inGame){
         if(pressed[KEY_SPACE]){
             inGame = true;
         }
@@ -209,9 +221,11 @@ function logic(){
     });
 }
 
-function win(){
+function won(){
     win = brain.hp <= 0;
     loose = hero.hp <= 0; 
+    console.log(win);
+    inGame = ! (win || loose);
 }
 
 function drawInterface(){
@@ -222,6 +236,8 @@ function drawInterface(){
     rectfill ( canvas, width - 367, 38, 354, 14, 0xFFFFFFFF);   
     rectfill ( canvas, width - 365, 40, brain.hp*10, 10, 0xFFFF0000)
     scaled_sprite(canvas,brain.sprite_left,650,40, 0.1, 0.1);
+
+
 }
 
 function initGraphics(){
@@ -242,6 +258,8 @@ function initGraphics(){
     }
 
     font = load_font ("Galpon-Black.otf");
+
+    bang = load_bmp("graphics/boom.png")
 
 }
 
@@ -265,6 +283,7 @@ function main()
             logic();
 			draw();
             drawInterface();
+            won();
 	
 		}, BPS_TO_TIMER(60));
 	});
