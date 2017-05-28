@@ -185,40 +185,42 @@ function controls()
 
 function logic(){
 
-    if(brain.cooldown > 0){
-        brain.cooldown --;
-    }
+    if(inGame){
+        if(brain.cooldown > 0){
+            brain.cooldown --;
+        }
 
-    if(Math.random() < 0.005){
-        neurons.push({
-            x: brain.x,
-            y: brain.y,
-            sprite : neuron_sprite,
-            rotation : Math.floor(Math.random() * 180),
-            cooldown : 500
-        })
-    }
+        if(Math.random() < 0.005){
+            neurons.push({
+                x: brain.x,
+                y: brain.y,
+                sprite : neuron_sprite,
+                rotation : Math.floor(Math.random() * 180),
+                cooldown : 500
+            })
+        }
 
-    if(brain.cooldown <= 0 && hero.kick && Math.abs(hero.x-brain.x) <= (brain.hp*1024)/200 && Math.abs(hero.y-brain.y) <= (brain.hp*715)/200){
-        brain.hp -= 5;
-        brain.cooldown = 120;
-        brain.vx = -brain.vx*1.3;
-        brain.vy = -brain.vy*1.3;
-        hits.push({
-            x : brain.x,
-            y : brain.y,
-            sprite : hit_sprites[Math.floor(Math.random() * 4)],
-            cooldown : 60,
-            rotation: Math.floor(Math.random() * 40)- 20
+        if(brain.cooldown <= 0 && hero.kick && Math.abs(hero.x-brain.x) <= (brain.hp*1024)/200 && Math.abs(hero.y-brain.y) <= (brain.hp*715)/200){
+            brain.hp -= 5;
+            brain.cooldown = 120;
+            brain.vx = -brain.vx*1.3;
+            brain.vy = -brain.vy*1.3;
+            hits.push({
+                x : brain.x,
+                y : brain.y,
+                sprite : hit_sprites[Math.floor(Math.random() * 4)],
+                cooldown : 60,
+                rotation: Math.floor(Math.random() * 40)- 20
+            });
+        }
+
+        neurons.forEach(function (neuron, index){
+            if(neuron.cooldown >=0 && Math.abs(hero.x - neuron.x)<=50 && Math.abs(hero.y - neuron.y)<=50){
+                hero.hp -= 5;
+                neurons.splice(index, 1);
+            }
         });
     }
-
-    neurons.forEach(function (neuron, index){
-        if(neuron.cooldown >=0 && Math.abs(hero.x - neuron.x)<=50 && Math.abs(hero.y - neuron.y)<=50){
-            hero.hp -= 5;
-            neurons.splice(index, 1);
-        }
-    });
 }
 
 function won(){

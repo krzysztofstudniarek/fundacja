@@ -40,7 +40,7 @@
 
           <div class="inner cover">
             <h1 class="cover-heading">Potwór padaczka dostaje kopniaczka!</h1>
-            <img src="graphics/musk.png" class="img-responsive" alt="Potwór Padaczka">
+            <img src="graphics/muskL.png" class="img-responsive" alt="Potwór Padaczka">
             <p class="lead">Żeby dać kopniaka Padaczce muszisz najpierw złożyć dotację i podać maila wpisanego na stronie DotPay.</p>
             <form action="game.php" method="post" class="form-inline">
               <p class="lead">
